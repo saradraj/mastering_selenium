@@ -37,6 +37,7 @@
 #########
 **/target/*
 target
+**/test-output/
 
 # Other IDE's#
 ##############
