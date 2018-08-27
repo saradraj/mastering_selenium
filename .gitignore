@@ -37,7 +37,6 @@
 #########
 **/target/*
 target
-/test-output/
 
 # Other IDE's#
 ##############
@@ -51,3 +50,4 @@ target
 ####################
 **/selenium_standalone_zips/
 **/selenium_standalone_binaries/
+/test-output
