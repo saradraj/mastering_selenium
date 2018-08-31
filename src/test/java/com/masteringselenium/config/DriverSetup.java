@@ -1,11 +1,11 @@
 package com.masteringselenium.config;
 
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 public interface DriverSetup {
-	WebDriver getWebDriverObject(DesiredCapabilities desiredCapabilities);
+	RemoteWebDriver getWebDriverObject(DesiredCapabilities desiredCapabilities);
 
-	DesiredCapabilities getDesiredCapabilities();
+	//DesiredCapabilities getDesiredCapabilities();
 
 }

@@ -16,7 +16,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
 		<!-- Dependency versions -->
-		<selenium.version>3.13.0</selenium.version>
+		<selenium.version>3.14.0</selenium.version>
 		<java.version>1.8</java.version>
 
 		<!-- Plugin Versions -->
@@ -24,10 +24,55 @@
 		<maven-failsafe-plugin.version>2.22.0</maven-failsafe-plugin.version>
 
 		<!-- Configurable variables -->
-		<threads>1</threads>
+		<read.timeout>30000</read.timeout>
+		<retry.attempts>4</retry.attempts>
 		<browser>firefox</browser>
-		<overwrite.binaries>false</overwrite.binaries>
+		<threads>1</threads>
+		<overwrite.binaries>true</overwrite.binaries>
+		<remote>false</remote>
+		<seleniumGridURL />
+		<platform />
+		<browserVersion />
 	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-remote-driver</artifactId>
+			<version>${selenium.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>6.14.3</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-impl</artifactId>
+			<version>2.2.7</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core -->
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-core</artifactId>
+			<version>2.2.7</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.codeborne/phantomjsdriver -->
+		<dependency>
+			<groupId>com.codeborne</groupId>
+			<artifactId>phantomjsdriver</artifactId>
+			<version>1.4.4</version>
+		</dependency>
+	</dependencies>
 	<profiles>
 		<profile>
 			<id>selenium</id>
@@ -37,6 +82,15 @@
 			<build>
 				<plugins>
 					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<configuration>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
+						</configuration>
+						<version>${maven-compiler-plugin.version}</version>
+					</plugin>
+					<plugin>
 						<groupId>com.lazerycode.selenium</groupId>
 						<artifactId>driver-binary-downloader-maven-plugin</artifactId>
 						<version>1.0.17</version>
@@ -45,6 +99,14 @@
 							<downloadedZipFileDirectory>${project.basedir}/src/test/resources/selenium_standalone_zips</downloadedZipFileDirectory>
 							<customRepositoryMap>${project.basedir}/src/test/resources/RepositoryMap.xml</customRepositoryMap>
 							<overwriteFilesThatExist>${overwrite.binaries}</overwriteFilesThatExist>
+							<onlyGetDriversForHostOperatingSystem>false</onlyGetDriversForHostOperatingSystem>
+							<fileDownloadRetryAttempts>${retry.attempts}</fileDownloadRetryAttempts>
+							<fileDownloadReadTimeout>${read.timeout}</fileDownloadReadTimeout>
+							<operatingSystems>
+								<windows>true</windows>
+								<linux>true</linux>
+								<mac>true</mac>
+							</operatingSystems>
 						</configuration>
 						<executions>
 							<execution>
@@ -57,23 +119,18 @@
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-compiler-plugin</artifactId>
-						<configuration>
-							<source>${java.version}</source>
-							<target>${java.version}</target>
-						</configuration>
-						<version>${maven-compiler-plugin.version}</version>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-failsafe-plugin</artifactId>
 						<version>${maven-failsafe-plugin.version}</version>
 						<configuration>
 							<parallel>methods</parallel>
 							<threadCount>${threads}</threadCount>
-							<systemProperties>
+							<systemPropertyVariables>
 								<browser>${browser}</browser>
+								<remoteDriver>${remote}</remoteDriver>
+								<gridURL>${seleniumGridURL}</gridURL>
+								<desiredPlatform>${platform}</desiredPlatform>
+								<desiredBrowserVersion>${browserVersion}</desiredBrowserVersion>
+
 								<!-- Set properties passed in by the driver binary downloader -->
 								<webdriver.chrome.driver>${webdriver.chrome.driver}</webdriver.chrome.driver>
 								<webdriver.ie.driver>${webdriver.ie.driver}</webdriver.ie.driver>
@@ -81,13 +138,14 @@
 								<webdriver.gecko.driver>${webdriver.gecko.driver}</webdriver.gecko.driver>
 								<webdriver.edge.driver>${webdriver.edge.driver}</webdriver.edge.driver>
 								<phantomjs.binary.path>${phantomjs.binary.path}</phantomjs.binary.path>
-							</systemProperties>
+							</systemPropertyVariables>
 							<includes>**/*WD.java</includes>
 						</configuration>
 						<executions>
 							<execution>
 								<goals>
 									<goal>integration-test</goal>
+									<!--This goal makes the build fail if you have test failures -->
 									<goal>verify</goal>
 								</goals>
 							</execution>
@@ -95,45 +153,6 @@
 					</plugin>
 				</plugins>
 			</build>
-			<dependencies>
-				<dependency>
-					<groupId>org.seleniumhq.selenium</groupId>
-					<artifactId>selenium-java</artifactId>
-					<version>${selenium.version}</version>
-					<scope>test</scope>
-				</dependency>
-				<dependency>
-					<groupId>org.seleniumhq.selenium</groupId>
-					<artifactId>selenium-remote-driver</artifactId>
-					<version>${selenium.version}</version>
-				</dependency>
-				<dependency>
-					<groupId>org.testng</groupId>
-					<artifactId>testng</artifactId>
-					<version>6.11</version>
-					<scope>test</scope>
-				</dependency>
-				<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
-				<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
-				<dependency>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-					<version>2.2.7</version>
-				</dependency>
-
-				<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-core -->
-				<dependency>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-core</artifactId>
-					<version>2.2.7</version>
-				</dependency>
-				<!-- https://mvnrepository.com/artifact/com.codeborne/phantomjsdriver -->
-				<dependency>
-					<groupId>com.codeborne</groupId>
-					<artifactId>phantomjsdriver</artifactId>
-					<version>1.4.4</version>
-				</dependency>
-			</dependencies>
 		</profile>
 	</profiles>
 </project>
