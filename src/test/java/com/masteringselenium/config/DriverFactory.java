@@ -1,6 +1,6 @@
 package com.masteringselenium.config;
 
-import static com.masteringselenium.config.DriverType.FIREFOX;
+import static com.masteringselenium.config.DriverType.firefox;
 import static com.masteringselenium.config.DriverType.valueOf;
 
 import java.net.MalformedURLException;
@@ -18,7 +18,7 @@ public class DriverFactory {
 	private final Boolean useRemoteWebDriver = Boolean.getBoolean("remoteDriver");
 
 	public DriverFactory() {
-		DriverType driverType = FIREFOX;
+		DriverType driverType = firefox;
 		String browser = System.getProperty("browser", driverType.toString().toUpperCase());
 		try {
 			driverType = valueOf(browser);
