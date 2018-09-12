@@ -22,7 +22,7 @@ import org.openqa.selenium.safari.SafariOptions;
 
 public enum DriverType implements DriverSetup {
 
-	FIREFOX {
+	firefox {
 		public RemoteWebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			FirefoxOptions options = new FirefoxOptions();
 			options.merge(capabilities);
@@ -30,7 +30,7 @@ public enum DriverType implements DriverSetup {
 			return new FirefoxDriver(options);
 		}
 	},
-	CHROME {
+	chrome {
 		public RemoteWebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			HashMap<String, Object> chromePreferences = new HashMap<>();
 			chromePreferences.put("profile.password_manager_enabled", false);
@@ -43,7 +43,7 @@ public enum DriverType implements DriverSetup {
 			return new ChromeDriver(options);
 		}
 	},
-	IE {
+	ie {
 		public RemoteWebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			InternetExplorerOptions options = new InternetExplorerOptions();
 			options.merge(capabilities);
@@ -53,14 +53,14 @@ public enum DriverType implements DriverSetup {
 			return new InternetExplorerDriver(options);
 		}
 	},
-	SAFARI {
+	safari {
 		public RemoteWebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			SafariOptions options = new SafariOptions();
 			options.merge(capabilities);
 			return new SafariDriver(options);
 		}
 	},
-	OPERA {
+	opera {
 		public RemoteWebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			OperaOptions options = new OperaOptions();
 			options.merge(capabilities);
@@ -68,7 +68,7 @@ public enum DriverType implements DriverSetup {
 
 		}
 	},
-	PHANTOMJS {
+	phantomjs {
 		public RemoteWebDriver getWebDriverObject(DesiredCapabilities capabilities) {
 			final List<String> cliArguments = new ArrayList<String>();
 			cliArguments.add("--web-security=false");
